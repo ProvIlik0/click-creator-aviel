@@ -2,8 +2,24 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Click Speed Challenge</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- BASIC -->
+<title>Click Speed Challenge ⚡</title>
+<meta name="description" content="Проверь скорость кликов за 10 секунд. Античит, анимации и уровень твоего скилла.">
+
+<!-- OPEN GRAPH (Discord / Telegram) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ТВОЙ_НИК.github.io/ИМЯ_РЕПО/">
+<meta property="og:title" content="Click Speed Challenge ⚡">
+<meta property="og:description" content="Кто кликает быстрее? 10 секунд, античит и балдёжные анимации 🔥">
+<meta property="og:image" content="https://ТВОЙ_НИК.github.io/ИМЯ_РЕПО/preview.png">
+
+<!-- TWITTER / TG -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Click Speed Challenge ⚡">
+<meta name="twitter:description" content="Жми быстро. Честно. Без автокликера.">
+<meta name="twitter:image" content="https://ТВОЙ_НИК.github.io/ИМЯ_РЕПО/preview.png">
 
 <style>
 * { box-sizing: border-box; }
@@ -20,7 +36,7 @@ body {
 }
 
 #app {
-    background: rgba(20, 30, 60, 0.85);
+    background: rgba(20, 30, 60, 0.88);
     border-radius: 20px;
     padding: 30px;
     width: 340px;
@@ -33,7 +49,7 @@ h1 { margin-bottom: 10px; }
 #mainButton {
     margin: 20px 0;
     height: 140px;
-    border-radius: 16px;
+    border-radius: 18px;
     background: linear-gradient(135deg, #4da3ff, #7f5cff);
     display: flex;
     align-items: center;
@@ -47,6 +63,7 @@ h1 { margin-bottom: 10px; }
 }
 
 #mainButton:active { transform: scale(0.95); }
+
 .pulse { animation: pulse 1s infinite; }
 .shake { animation: shake 0.25s; }
 .locked { pointer-events: none; opacity: 0.6; }
@@ -155,7 +172,7 @@ function startCountdown() {
     }, 1000);
 }
 
-/* START */
+/* START TEST */
 function startTest() {
     state = "running";
     startTime = performance.now();
@@ -173,10 +190,10 @@ function startTest() {
 function registerClick() {
     clicks.push(performance.now());
     button.classList.add("shake");
-    setTimeout(() => button.classList.remove("shake"), 150);
+    setTimeout(() => button.classList.remove("shake"), 120);
 }
 
-/* END → MANUAL COOLDOWN */
+/* END → BLOCK */
 function endTest() {
     clearInterval(timerInterval);
     state = "cooldown";
@@ -237,7 +254,7 @@ function getLevel(cps) {
 function detectCheat(times) {
     if (times.length < 10) return false;
     let intervals = [];
-    for (let i = 1; i < times.length; i++) intervals.push(times[i]-times[i-1]);
+    for (let i = 1; i < times.length; i++) intervals.push(times[i] - times[i-1]);
     const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
     const variance = intervals.reduce((a,b)=>a+Math.abs(b-avg),0)/intervals.length;
     return variance < 3 || times.length / (TEST_TIME/1000) > 15;
