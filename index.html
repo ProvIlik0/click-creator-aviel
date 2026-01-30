@@ -4,29 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- BASIC -->
 <title>Click Speed Challenge ⚡</title>
-<meta name="description" content="Проверь скорость кликов за 10 секунд. Античит, анимации и уровень твоего скилла.">
-
-<!-- OPEN GRAPH (Discord / Telegram) -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://ТВОЙ_НИК.github.io/ИМЯ_РЕПО/">
-<meta property="og:title" content="Click Speed Challenge ⚡">
-<meta property="og:description" content="Кто кликает быстрее? 10 секунд, античит и балдёжные анимации 🔥">
-<meta property="og:image" content="https://ТВОЙ_НИК.github.io/ИМЯ_РЕПО/preview.png">
-
-<!-- TWITTER / TG -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Click Speed Challenge ⚡">
-<meta name="twitter:description" content="Жми быстро. Честно. Без автокликера.">
-<meta name="twitter:image" content="https://ТВОЙ_НИК.github.io/ИМЯ_РЕПО/preview.png">
+<meta name="description" content="10 секунд кликов. Честный подсчёт CPS без лимитов.">
 
 <style>
 * { box-sizing: border-box; }
 
 body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
     font-family: 'Segoe UI', Arial, sans-serif;
     background: radial-gradient(circle at top, #1b2b4a, #060b1a);
     display: flex;
@@ -36,18 +22,18 @@ body {
 }
 
 #app {
-    background: rgba(20, 30, 60, 0.88);
-    border-radius: 20px;
-    padding: 30px;
-    width: 340px;
+    background: rgba(20, 30, 60, 0.9);
+    border-radius: 22px;
+    padding: 28px;
+    width: 360px;
     text-align: center;
-    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    box-shadow: 0 0 45px rgba(0,0,0,0.7);
 }
 
-h1 { margin-bottom: 10px; }
+h1 { margin: 0 0 10px; }
 
 #mainButton {
-    margin: 20px 0;
+    margin: 18px 0;
     height: 140px;
     border-radius: 18px;
     background: linear-gradient(135deg, #4da3ff, #7f5cff);
@@ -59,18 +45,17 @@ h1 { margin-bottom: 10px; }
     color: #000;
     cursor: pointer;
     user-select: none;
-    transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+    transition: transform .1s, box-shadow .1s, opacity .2s;
 }
-
-#mainButton:active { transform: scale(0.95); }
+#mainButton:active { transform: scale(.95); }
 
 .pulse { animation: pulse 1s infinite; }
-.shake { animation: shake 0.25s; }
-.locked { pointer-events: none; opacity: 0.6; }
+.shake { animation: shake .2s; }
+.locked { pointer-events: none; opacity: .6; }
 
 #countdown {
-    font-size: 36px;
-    height: 60px;
+    font-size: 34px;
+    height: 50px;
 }
 
 #timer {
@@ -79,7 +64,7 @@ h1 { margin-bottom: 10px; }
     background: #111;
     border-radius: 10px;
     overflow: hidden;
-    margin: 10px 0;
+    margin: 8px 0 12px;
 }
 #timerBar {
     height: 100%;
@@ -87,31 +72,44 @@ h1 { margin-bottom: 10px; }
     background: linear-gradient(90deg, #6bff95, #4da3ff);
 }
 
-#stats { font-size: 14px; color: #ccc; }
-#result { margin-top: 10px; font-size: 16px; }
-
-.good { color: #6bff95; }
-.bad { color: #ff6b6b; }
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
-    50% { box-shadow: 0 0 30px rgba(255,255,255,0.9); }
-    100% { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+canvas {
+    width: 100%;
+    height: 70px;
+    background: #0c1224;
+    border-radius: 8px;
+    margin-top: 8px;
 }
 
+#stats { font-size: 14px; color: #ccc; margin-top: 6px; }
+#result { margin-top: 10px; font-size: 16px; }
+
+#records {
+    margin-top: 12px;
+    text-align: left;
+    font-size: 13px;
+}
+#records b { display: block; margin-bottom: 4px; }
+
+.good { color: #6bff95; }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 rgba(255,255,255,.4); }
+    50% { box-shadow: 0 0 30px rgba(255,255,255,.9); }
+    100% { box-shadow: 0 0 0 rgba(255,255,255,.4); }
+}
 @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-4px)}
+    50%{transform:translateX(4px)}
+    75%{transform:translateX(-4px)}
+    100%{transform:translateX(0)}
 }
 </style>
 </head>
 <body>
 
 <div id="app">
-    <h1>Click Speed Challenge</h1>
+    <h1>Click Speed ⚡</h1>
 
     <div id="countdown"></div>
 
@@ -119,145 +117,180 @@ h1 { margin-bottom: 10px; }
 
     <div id="timer"><div id="timerBar"></div></div>
 
+    <canvas id="graph" width="300" height="70"></canvas>
+
     <div id="result"></div>
 
     <div id="stats">
-        CPS: <span id="cps">0</span><br>
+        CPS: <span id="cps">0</span> |
         Уровень: <span id="level">—</span>
+    </div>
+
+    <div id="records">
+        <b>🏆 Лучшие результаты (локально)</b>
+        <div id="recordsList"></div>
     </div>
 </div>
 
 <script>
-const button = document.getElementById("mainButton");
-const countdownEl = document.getElementById("countdown");
-const timerBar = document.getElementById("timerBar");
-const cpsEl = document.getElementById("cps");
-const levelEl = document.getElementById("level");
-const resultEl = document.getElementById("result");
-
+/* ================== CONFIG ================== */
 const TEST_TIME = 10000;
 const COOLDOWN = 3000;
 
-// states: idle → countdown → running → cooldown → result
-let state = "idle";
+/* ================== ELEMENTS ================== */
+const btn = document.getElementById("mainButton");
+const cdEl = document.getElementById("countdown");
+const bar = document.getElementById("timerBar");
+const cpsEl = document.getElementById("cps");
+const levelEl = document.getElementById("level");
+const resultEl = document.getElementById("result");
+const graph = document.getElementById("graph");
+const g = graph.getContext("2d");
+const recordsEl = document.getElementById("recordsList");
+
+/* ================== STATE ================== */
+let state = "idle"; // idle → countdown → running → cooldown → result
 let clicks = [];
+let cpsHistory = [];
 let startTime = 0;
 let timerInterval = null;
 
-button.addEventListener("click", () => {
+/* ================== RECORDS ================== */
+let records = JSON.parse(localStorage.getItem("cps_records") || "[]");
+renderRecords();
+
+/* ================== BUTTON ================== */
+btn.addEventListener("click", () => {
     if (state === "idle") startCountdown();
     else if (state === "running") registerClick();
     else if (state === "result") reset();
 });
 
-/* COUNTDOWN */
+/* ================== COUNTDOWN ================== */
 function startCountdown() {
     state = "countdown";
-    button.classList.remove("pulse");
-    button.textContent = "ЖДИ";
+    btn.classList.remove("pulse");
+    btn.textContent = "ЖДИ";
     clicks = [];
-    resultEl.textContent = "";
+    cpsHistory = [];
 
     let c = 3;
-    countdownEl.textContent = c;
+    cdEl.textContent = c;
 
     const cd = setInterval(() => {
         c--;
-        if (c > 0) countdownEl.textContent = c;
+        if (c > 0) cdEl.textContent = c;
         else {
             clearInterval(cd);
-            countdownEl.textContent = "ПОЕХАЛ!";
+            cdEl.textContent = "ПОЕХАЛ!";
             startTest();
         }
     }, 1000);
 }
 
-/* START TEST */
+/* ================== START TEST ================== */
 function startTest() {
     state = "running";
+    btn.textContent = "КЛИКАЙ!";
     startTime = performance.now();
-    button.textContent = "КЛИКАЙ!";
-    timerBar.style.width = "0%";
+    bar.style.width = "0%";
 
     timerInterval = setInterval(() => {
         const elapsed = performance.now() - startTime;
-        timerBar.style.width = Math.min(100, elapsed / TEST_TIME * 100) + "%";
-        if (elapsed >= TEST_TIME) endTest();
-    }, 50);
+        bar.style.width = Math.min(100, elapsed / TEST_TIME * 100) + "%";
+
+        const cpsNow = clicks.length / Math.max(1, elapsed / 1000);
+        cpsHistory.push(cpsNow);
+        drawGraph();
+
+        if (elapsed >= TEST_TIME) finishTest();
+    }, 80);
 }
 
-/* CLICK */
+/* ================== CLICK ================== */
 function registerClick() {
     clicks.push(performance.now());
-    button.classList.add("shake");
-    setTimeout(() => button.classList.remove("shake"), 120);
+    btn.classList.add("shake");
+    setTimeout(() => btn.classList.remove("shake"), 120);
 }
 
-/* END → BLOCK */
-function endTest() {
+/* ================== FINISH ================== */
+function finishTest() {
     clearInterval(timerInterval);
     state = "cooldown";
-    button.classList.add("locked");
-    button.textContent = "ПОДОЖДИ";
+    btn.classList.add("locked");
+    btn.textContent = "ПОДОЖДИ";
 
-    const cps = (clicks.length / (TEST_TIME / 1000)).toFixed(2);
+    const cps = +(clicks.length / (TEST_TIME / 1000)).toFixed(2);
     cpsEl.textContent = cps;
+    levelEl.textContent = getLevel(cps);
 
-    if (detectCheat(clicks)) {
-        resultEl.textContent = "🚫 Обнаружен автокликер";
-        resultEl.className = "bad";
-        levelEl.textContent = "Cheater";
-    } else {
-        resultEl.textContent = "✅ Честный результат";
-        resultEl.className = "good";
-        levelEl.textContent = getLevel(cps);
-    }
+    records.push(cps);
+    records = records.sort((a,b)=>b-a).slice(0,5);
+    localStorage.setItem("cps_records", JSON.stringify(records));
+    renderRecords();
 
-    let cd = 3;
-    countdownEl.textContent = "Можно через " + cd;
+    resultEl.textContent = "Результат зафиксирован";
+    resultEl.className = "good";
+
+    let cd = COOLDOWN / 1000;
+    cdEl.textContent = "Можно через " + cd;
 
     const cool = setInterval(() => {
         cd--;
-        if (cd > 0) countdownEl.textContent = "Можно через " + cd;
+        if (cd > 0) cdEl.textContent = "Можно через " + cd;
         else {
             clearInterval(cool);
             state = "result";
-            countdownEl.textContent = "";
-            button.classList.remove("locked");
-            button.textContent = "ЕЩЁ РАЗ?";
-            button.classList.add("pulse");
+            btn.classList.remove("locked");
+            btn.classList.add("pulse");
+            btn.textContent = "ЕЩЁ РАЗ?";
+            cdEl.textContent = "";
         }
     }, 1000);
 }
 
-/* RESET */
+/* ================== RESET ================== */
 function reset() {
     state = "idle";
-    button.textContent = "Готов?";
+    btn.textContent = "Готов?";
     cpsEl.textContent = "0";
     levelEl.textContent = "—";
     resultEl.textContent = "";
-    timerBar.style.width = "0%";
+    bar.style.width = "0%";
+    g.clearRect(0,0,graph.width,graph.height);
 }
 
-/* LEVELS */
+/* ================== GRAPH ================== */
+function drawGraph() {
+    g.clearRect(0,0,graph.width,graph.height);
+    g.strokeStyle = "#6bff95";
+    g.beginPath();
+
+    cpsHistory.forEach((v,i)=>{
+        const x = i / cpsHistory.length * graph.width;
+        const y = graph.height - Math.min(v * 3.5, graph.height);
+        i ? g.lineTo(x,y) : g.moveTo(x,y);
+    });
+    g.stroke();
+}
+
+/* ================== LEVELS (NO LIMIT) ================== */
 function getLevel(cps) {
-    cps = parseFloat(cps);
     if (cps < 4) return "Новичок";
-    if (cps < 6) return "Обычный игрок";
-    if (cps < 8) return "Быстрый палец";
-    if (cps < 10) return "Киберспортсмен";
-    return "⚡ Легенда";
+    if (cps < 6) return "Игрок";
+    if (cps < 8) return "Быстрый";
+    if (cps < 10) return "Про";
+    if (cps < 13) return "⚡ Очень быстрый";
+    if (cps < 16) return "🔥 Элита";
+    return "👑 Нечеловек";
 }
 
-/* ANTICHEAT */
-function detectCheat(times) {
-    if (times.length < 10) return false;
-    let intervals = [];
-    for (let i = 1; i < times.length; i++) intervals.push(times[i] - times[i-1]);
-    const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
-    const variance = intervals.reduce((a,b)=>a+Math.abs(b-avg),0)/intervals.length;
-    return variance < 3 || times.length / (TEST_TIME/1000) > 15;
+/* ================== RECORDS UI ================== */
+function renderRecords() {
+    recordsEl.innerHTML = records
+        .map((r,i)=>`${i+1}. ${r} CPS`)
+        .join("<br>");
 }
 </script>
 
