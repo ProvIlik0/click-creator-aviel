@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Click Speed Challenge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(circle at top, #1b2b4a, #060b1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+#app {
+    background: rgba(20, 30, 60, 0.85);
+    border-radius: 20px;
+    padding: 30px;
+    width: 340px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+h1 { margin-bottom: 10px; }
+
+#mainButton {
+    margin: 20px 0;
+    height: 140px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #4da3ff, #7f5cff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+}
+
+#mainButton:active { transform: scale(0.95); }
+.pulse { animation: pulse 1s infinite; }
+.shake { animation: shake 0.25s; }
+.locked { pointer-events: none; opacity: 0.6; }
+
+#countdown {
+    font-size: 36px;
+    height: 60px;
+}
+
+#timer {
+    height: 10px;
+    width: 100%;
+    background: #111;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+#timerBar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #6bff95, #4da3ff);
+}
+
+#stats { font-size: 14px; color: #ccc; }
+#result { margin-top: 10px; font-size: 16px; }
+
+.good { color: #6bff95; }
+.bad { color: #ff6b6b; }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+    50% { box-shadow: 0 0 30px rgba(255,255,255,0.9); }
+    100% { box-shadow: 0 0 0 rgba(255,255,255,0.4); }
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+    <h1>Click Speed Challenge</h1>
+
+    <div id="countdown"></div>
+
+    <div id="mainButton" class="pulse">Готов?</div>
+
+    <div id="timer"><div id="timerBar"></div></div>
+
+    <div id="result"></div>
+
+    <div id="stats">
+        CPS: <span id="cps">0</span><br>
+        Уровень: <span id="level">—</span>
+    </div>
+</div>
+
+<script>
+const button = document.getElementById("mainButton");
+const countdownEl = document.getElementById("countdown");
+const timerBar = document.getElementById("timerBar");
+const cpsEl = document.getElementById("cps");
+const levelEl = document.getElementById("level");
+const resultEl = document.getElementById("result");
+
+const TEST_TIME = 10000;
+const COOLDOWN = 3000;
+
+// states: idle → countdown → running → cooldown → result
+let state = "idle";
+let clicks = [];
+let startTime = 0;
+let timerInterval = null;
+
+button.addEventListener("click", () => {
+    if (state === "idle") startCountdown();
+    else if (state === "running") registerClick();
+    else if (state === "result") reset();
+});
+
+/* COUNTDOWN */
+function startCountdown() {
+    state = "countdown";
+    button.classList.remove("pulse");
+    button.textContent = "ЖДИ";
+    clicks = [];
+    resultEl.textContent = "";
+
+    let c = 3;
+    countdownEl.textContent = c;
+
+    const cd = setInterval(() => {
+        c--;
+        if (c > 0) countdownEl.textContent = c;
+        else {
+            clearInterval(cd);
+            countdownEl.textContent = "ПОЕХАЛ!";
+            startTest();
+        }
+    }, 1000);
+}
+
+/* START */
+function startTest() {
+    state = "running";
+    startTime = performance.now();
+    button.textContent = "КЛИКАЙ!";
+    timerBar.style.width = "0%";
+
+    timerInterval = setInterval(() => {
+        const elapsed = performance.now() - startTime;
+        timerBar.style.width = Math.min(100, elapsed / TEST_TIME * 100) + "%";
+        if (elapsed >= TEST_TIME) endTest();
+    }, 50);
+}
+
+/* CLICK */
+function registerClick() {
+    clicks.push(performance.now());
+    button.classList.add("shake");
+    setTimeout(() => button.classList.remove("shake"), 150);
+}
+
+/* END → MANUAL COOLDOWN */
+function endTest() {
+    clearInterval(timerInterval);
+    state = "cooldown";
+    button.classList.add("locked");
+    button.textContent = "ПОДОЖДИ";
+
+    const cps = (clicks.length / (TEST_TIME / 1000)).toFixed(2);
+    cpsEl.textContent = cps;
+
+    if (detectCheat(clicks)) {
+        resultEl.textContent = "🚫 Обнаружен автокликер";
+        resultEl.className = "bad";
+        levelEl.textContent = "Cheater";
+    } else {
+        resultEl.textContent = "✅ Честный результат";
+        resultEl.className = "good";
+        levelEl.textContent = getLevel(cps);
+    }
+
+    let cd = 3;
+    countdownEl.textContent = "Можно через " + cd;
+
+    const cool = setInterval(() => {
+        cd--;
+        if (cd > 0) countdownEl.textContent = "Можно через " + cd;
+        else {
+            clearInterval(cool);
+            state = "result";
+            countdownEl.textContent = "";
+            button.classList.remove("locked");
+            button.textContent = "ЕЩЁ РАЗ?";
+            button.classList.add("pulse");
+        }
+    }, 1000);
+}
+
+/* RESET */
+function reset() {
+    state = "idle";
+    button.textContent = "Готов?";
+    cpsEl.textContent = "0";
+    levelEl.textContent = "—";
+    resultEl.textContent = "";
+    timerBar.style.width = "0%";
+}
+
+/* LEVELS */
+function getLevel(cps) {
+    cps = parseFloat(cps);
+    if (cps < 4) return "Новичок";
+    if (cps < 6) return "Обычный игрок";
+    if (cps < 8) return "Быстрый палец";
+    if (cps < 10) return "Киберспортсмен";
+    return "⚡ Легенда";
+}
+
+/* ANTICHEAT */
+function detectCheat(times) {
+    if (times.length < 10) return false;
+    let intervals = [];
+    for (let i = 1; i < times.length; i++) intervals.push(times[i]-times[i-1]);
+    const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
+    const variance = intervals.reduce((a,b)=>a+Math.abs(b-avg),0)/intervals.length;
+    return variance < 3 || times.length / (TEST_TIME/1000) > 15;
+}
+</script>
+
+</body>
+</html>
